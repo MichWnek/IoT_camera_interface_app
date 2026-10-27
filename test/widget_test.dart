@@ -6,6 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:camera_trap_app/app.dart';
+import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,6 +16,6 @@ void main() {
 
     // Verify text is displayed
     expect(find.text('Camera Traps'), findsOneWidget);
-    expect(find.text('No cameras yet'), findsOneWidget);
+    expect(find.byType(CameraCard), findsNWidgets(3));
   });
 }

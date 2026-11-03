@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   static ThemeData get day => ThemeData(
     colorScheme: ColorScheme.fromSeed(
-      //looks fine, woody tones resemble
+      //looks fine, woody tones resemble nature
       seedColor: const Color.fromARGB(255, 64, 50, 1),
       contrastLevel: 1.0,
     ),
@@ -17,7 +17,7 @@ abstract final class AppTheme {
       onSurface: Color.fromARGB(255, 255, 0, 0),
       error: Color.fromARGB(255, 255, 1, 1),
       outline: Color.fromARGB(255, 200, 0, 0),
-      surfaceContainerLow: Color.fromARGB(117, 33, 0, 0),
+      surfaceContainerLow: Color.fromARGB(232, 46, 0, 0),
     ),
   );
 }

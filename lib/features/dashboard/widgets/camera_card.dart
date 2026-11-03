@@ -45,6 +45,9 @@ class CameraCard extends StatelessWidget {
                       color: batteryPercent > 20
                           ? colors.primary
                           : colors.error,
+                      fontWeight: batteryPercent > 20
+                          ? FontWeight.normal
+                          : FontWeight.bold,
                     ),
                   ),
                   Text(

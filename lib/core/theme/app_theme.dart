@@ -11,13 +11,13 @@ abstract final class AppTheme {
 
   static ThemeData get night => ThemeData(
     colorScheme: const ColorScheme.dark(
-      primary: Color.fromARGB(255, 0, 0, 0),
-      onPrimary: Color.fromARGB(255, 185, 0, 0),
+      primary: Color.fromARGB(255, 255, 1, 1),
+      onPrimary: Color.fromARGB(255, 0, 0, 0),
       surface: Color.fromARGB(255, 0, 0, 0),
-      onSurface: Color.fromARGB(255, 227, 0, 0),
+      onSurface: Color.fromARGB(255, 255, 0, 0),
       error: Color.fromARGB(255, 255, 1, 1),
-      outline: Color.fromARGB(255, 209, 0, 0),
-      secondary: Color.fromARGB(51, 98, 0, 0),
+      outline: Color.fromARGB(255, 200, 0, 0),
+      surfaceContainerLow: Color.fromARGB(117, 33, 0, 0),
     ),
   );
 }

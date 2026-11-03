@@ -20,14 +20,13 @@ class CameraCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     return Card(
-      color: colors.secondary,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
             Icon(
               isOnline ? Icons.bluetooth : Icons.block_rounded,
-              color: isOnline ? colors.onPrimary : colors.outline,
+              color: isOnline ? colors.primary : colors.outline,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -44,7 +43,7 @@ class CameraCard extends StatelessWidget {
                     'Battery $batteryPercent%',
                     style: text.bodyMedium?.copyWith(
                       color: batteryPercent > 20
-                          ? colors.onPrimary
+                          ? colors.primary
                           : colors.error,
                     ),
                   ),
@@ -55,7 +54,7 @@ class CameraCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: colors.onPrimary),
+            Icon(Icons.chevron_right, color: colors.primary),
           ],
         ),
       ),

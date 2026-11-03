@@ -6,7 +6,6 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(title: Text('Camera Traps', style: text.titleLarge)),
@@ -33,7 +32,6 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: colors.secondary,
         onPressed: () {},
         child: const Icon(Icons.add),
       ),

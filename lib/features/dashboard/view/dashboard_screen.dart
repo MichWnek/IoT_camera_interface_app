@@ -6,8 +6,10 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Camera Traps')),
+      appBar: AppBar(title: Text('Camera Traps', style: text.titleLarge)),
       body: ListView(
         children: const [
           CameraCard(
@@ -19,7 +21,7 @@ class DashboardScreen extends StatelessWidget {
           CameraCard(
             name: 'Camera 2',
             batteryPercent: 1119,
-            sdFreeGb: 3987489174937498,
+            sdFreeGb: 0.564343,
             isOnline: true,
           ),
           CameraCard(
@@ -31,6 +33,7 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: colors.secondary,
         onPressed: () {},
         child: const Icon(Icons.add),
       ),

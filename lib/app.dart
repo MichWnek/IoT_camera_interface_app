@@ -1,5 +1,5 @@
 import 'package:camera_trap_app/features/dashboard/view/dashboard_screen.dart';
-
+import 'package:camera_trap_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CameraTrapApp extends StatelessWidget {
@@ -7,10 +7,13 @@ class CameraTrapApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Camera Traps',
       debugShowCheckedModeBanner: false,
-      home: DashboardScreen(),
+      theme: AppTheme.day,
+      darkTheme: AppTheme.night,
+      themeMode: ThemeMode.system,
+      home: const DashboardScreen(),
     );
   }
 }

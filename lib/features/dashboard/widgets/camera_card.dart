@@ -16,27 +16,46 @@ class CameraCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
     return Card(
+      color: colors.secondary,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
             Icon(
-              Icons.brightness_1_rounded,
-              color: isOnline ? Colors.green : Colors.grey,
+              isOnline ? Icons.bluetooth : Icons.block_rounded,
+              color: isOnline ? colors.onPrimary : colors.outline,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  Text('Battery $batteryPercent%'),
-                  Text('SD ${sdFreeGb.toStringAsFixed(2)} GB free'),
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.titleMedium,
+                  ),
+                  Text(
+                    'Battery $batteryPercent%',
+                    style: text.bodyMedium?.copyWith(
+                      color: batteryPercent > 20
+                          ? colors.onPrimary
+                          : colors.error,
+                    ),
+                  ),
+                  Text(
+                    'SD ${sdFreeGb.toStringAsFixed(2)} GB free',
+                    style: text.bodyMedium,
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right),
+            Icon(Icons.chevron_right, color: colors.onPrimary),
           ],
         ),
       ),

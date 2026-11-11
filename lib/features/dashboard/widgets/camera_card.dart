@@ -1,65 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:camera_trap_app/data/models/camera_trap.dart';
 
 class CameraCard extends StatelessWidget {
-  const CameraCard({
-    super.key,
-    required this.name,
-    required this.batteryPercent,
-    required this.sdFreeGb,
-    required this.isOnline,
-  });
+  const CameraCard({super.key, this.cameraTrap});
 
-  final String name;
-  final int batteryPercent;
-  final double sdFreeGb;
-  final bool isOnline;
+  final CameraTrap? cameraTrap;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
+    List<Widget> statusBar = [
+      Icon(
+        cameraTrap?.status?.isOnline == true
+            ? Icons.bluetooth
+            : Icons.block_rounded,
+        color: cameraTrap?.status?.isOnline == true
+            ? colors.primary
+            : colors.outline,
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              cameraTrap?.name ?? 'Unknown',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: text.titleMedium,
+            ),
+            Text(
+              'Battery ${cameraTrap?.status?.batteryPercent}%',
+              style: text.bodyMedium?.copyWith(
+                color: cameraTrap?.status?.isLowBattery == true
+                    ? colors.error
+                    : colors.primary,
+                fontWeight: cameraTrap?.status?.isLowBattery == true
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
+            ),
+            Text(
+              'SD ${cameraTrap?.status?.sdFreeGb.toStringAsFixed(2)} GB free',
+              style: text.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+      Icon(Icons.chevron_right, color: colors.primary),
+    ];
+    statusBar = [
+      Icon(
+        cameraTrap?.status?.isOnline == true
+            ? Icons.bluetooth
+            : Icons.block_rounded,
+        color: cameraTrap?.status?.isOnline == true
+            ? colors.primary
+            : colors.outline,
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              cameraTrap?.name ?? 'Unknown',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: text.titleMedium,
+            ),
+            Text(
+              'Battery ${cameraTrap?.status?.batteryPercent}%',
+              style: text.bodyMedium?.copyWith(
+                color: cameraTrap?.status?.isLowBattery == true
+                    ? colors.error
+                    : colors.primary,
+                fontWeight: cameraTrap?.status?.isLowBattery == true
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
+            ),
+            Text(
+              'SD ${cameraTrap?.status?.sdFreeGb.toStringAsFixed(2)} GB free',
+              style: text.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+      Icon(Icons.chevron_right, color: colors.primary),
+    ];
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Icon(
-              isOnline ? Icons.bluetooth : Icons.block_rounded,
-              color: isOnline ? colors.primary : colors.outline,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: text.titleMedium,
-                  ),
-                  Text(
-                    'Battery $batteryPercent%',
-                    style: text.bodyMedium?.copyWith(
-                      color: batteryPercent > 20
-                          ? colors.primary
-                          : colors.error,
-                      fontWeight: batteryPercent > 20
-                          ? FontWeight.normal
-                          : FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'SD ${sdFreeGb.toStringAsFixed(2)} GB free',
-                    style: text.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right, color: colors.primary),
-          ],
-        ),
+        child: Row(children: statusBar),
       ),
     );
   }

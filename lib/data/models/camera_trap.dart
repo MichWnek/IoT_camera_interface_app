@@ -25,6 +25,9 @@ class CameraTrap {
   @override
   int get hashCode => Object.hash(id, name, bleMac);
 
+  CameraTrap clearStatus() =>
+      CameraTrap(id: id, name: name, bleMac: bleMac, status: null);
+
   CameraTrap copyWith({
     String? id,
     String? name,

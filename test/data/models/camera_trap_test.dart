@@ -57,4 +57,15 @@ void main() {
     );
     expect(trap.status, isNull);
   });
+
+  test('ClearStatus returns a new CameraTrap with null status', () {
+    final trap1 = CameraTrap(
+      id: '1',
+      name: 'Camera 1',
+      bleMac: '00:11:22:33:44:55',
+      status: null,
+    );
+    final trap2 = trap1.clearStatus();
+    expect(trap2.status, isNull);
+  });
 }

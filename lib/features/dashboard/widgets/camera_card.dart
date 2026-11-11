@@ -11,47 +11,36 @@ class CameraCard extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
-    List<Widget> statusBar = [
-      Icon(
-        cameraTrap?.status?.isOnline == true
-            ? Icons.bluetooth
-            : Icons.block_rounded,
-        color: cameraTrap?.status?.isOnline == true
-            ? colors.primary
-            : colors.outline,
-      ),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              cameraTrap?.name ?? 'Unknown',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: text.titleMedium,
-            ),
-            Text(
-              'Battery ${cameraTrap?.status?.batteryPercent}%',
-              style: text.bodyMedium?.copyWith(
-                color: cameraTrap?.status?.isLowBattery == true
-                    ? colors.error
-                    : colors.primary,
-                fontWeight: cameraTrap?.status?.isLowBattery == true
-                    ? FontWeight.bold
-                    : FontWeight.normal,
-              ),
-            ),
-            Text(
-              'SD ${cameraTrap?.status?.sdFreeGb.toStringAsFixed(2)} GB free',
-              style: text.bodyMedium,
-            ),
-          ],
+    List<Widget> statusBar;
+
+    if (cameraTrap?.status == null) {
+      statusBar = [
+        Text(
+          'No status available, connect to device to retrieve status',
+          style: text.bodyMedium,
         ),
-      ),
-      Icon(Icons.chevron_right, color: colors.primary),
-    ];
-    statusBar = [
+      ];
+    } else {
+      statusBar = [
+        Text(
+          'Battery ${cameraTrap?.status?.batteryPercent}%',
+          style: text.bodyMedium?.copyWith(
+            color: cameraTrap?.status?.isLowBattery == true
+                ? colors.error
+                : colors.primary,
+            fontWeight: cameraTrap?.status?.isLowBattery == true
+                ? FontWeight.bold
+                : FontWeight.normal,
+          ),
+        ),
+        Text(
+          'SD ${cameraTrap?.status?.sdFreeGb.toStringAsFixed(2)} GB free',
+          style: text.bodyMedium,
+        ),
+      ];
+    }
+
+    List<Widget> cameraInfo = [
       Icon(
         cameraTrap?.status?.isOnline == true
             ? Icons.bluetooth
@@ -71,21 +60,8 @@ class CameraCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: text.titleMedium,
             ),
-            Text(
-              'Battery ${cameraTrap?.status?.batteryPercent}%',
-              style: text.bodyMedium?.copyWith(
-                color: cameraTrap?.status?.isLowBattery == true
-                    ? colors.error
-                    : colors.primary,
-                fontWeight: cameraTrap?.status?.isLowBattery == true
-                    ? FontWeight.bold
-                    : FontWeight.normal,
-              ),
-            ),
-            Text(
-              'SD ${cameraTrap?.status?.sdFreeGb.toStringAsFixed(2)} GB free',
-              style: text.bodyMedium,
-            ),
+            const SizedBox(height: 4),
+            ...statusBar,
           ],
         ),
       ),
@@ -95,7 +71,7 @@ class CameraCard extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(children: statusBar),
+        child: Row(children: cameraInfo),
       ),
     );
   }

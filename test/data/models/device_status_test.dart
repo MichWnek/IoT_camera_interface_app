@@ -3,12 +3,12 @@ import 'package:camera_trap_app/data/models/device_status.dart';
 
 void main() {
   test('Two DeviceStatus objects with same values are equal', () {
-    final status1 = DeviceStatus(
+    final status1 = const DeviceStatus(
       isOnline: true,
       batteryPercent: 80,
       sdFreeGb: 1.5,
     );
-    final status2 = DeviceStatus(
+    final status2 = const DeviceStatus(
       isOnline: true,
       batteryPercent: 80,
       sdFreeGb: 1.5,
@@ -17,12 +17,12 @@ void main() {
   });
 
   test('Two DeviceStatus objects with different values are not equal', () {
-    final status1 = DeviceStatus(
+    final status1 = const DeviceStatus(
       isOnline: true,
       batteryPercent: 80,
       sdFreeGb: 1.5,
     );
-    final status2 = DeviceStatus(
+    final status2 = const DeviceStatus(
       isOnline: false,
       batteryPercent: 80,
       sdFreeGb: 1.5,
@@ -31,7 +31,7 @@ void main() {
   });
 
   test('CopyWith creates a new DeviceStatus with updated values', () {
-    final status1 = DeviceStatus(
+    final status1 = const DeviceStatus(
       isOnline: true,
       batteryPercent: 80,
       sdFreeGb: 1.5,

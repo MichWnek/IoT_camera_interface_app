@@ -18,7 +18,7 @@ class DashboardScreen extends StatelessWidget {
               id: '1',
               name: 'Camera 1',
               bleMac: '00:11:22:33:44:55',
-              status: DeviceStatus(
+              status: const DeviceStatus(
                 batteryPercent: 67,
                 sdFreeGb: 0.67,
                 isOnline: true,
@@ -27,10 +27,10 @@ class DashboardScreen extends StatelessWidget {
           ),
           CameraCard(
             cameraTrap: CameraTrap(
-              id: '1',
-              name: 'Camera 1',
+              id: '2',
+              name: 'Camera 2',
               bleMac: '00:11:22:33:44:55',
-              status: DeviceStatus(
+              status: const DeviceStatus(
                 batteryPercent: 99,
                 sdFreeGb: 0.39385787395,
                 isOnline: false,

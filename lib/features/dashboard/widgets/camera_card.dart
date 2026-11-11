@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:camera_trap_app/data/models/camera_trap.dart';
 
 class CameraCard extends StatelessWidget {
-  const CameraCard({super.key, this.cameraTrap});
+  const CameraCard({super.key, required this.cameraTrap});
 
-  final CameraTrap? cameraTrap;
+  final CameraTrap cameraTrap;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class CameraCard extends StatelessWidget {
 
     List<Widget> statusBar;
 
-    if (cameraTrap?.status == null) {
+    if (cameraTrap.status == null) {
       statusBar = [
         Text(
           'No status available, connect to device to retrieve status',
@@ -23,18 +23,18 @@ class CameraCard extends StatelessWidget {
     } else {
       statusBar = [
         Text(
-          'Battery ${cameraTrap?.status?.batteryPercent}%',
+          'Battery ${cameraTrap.status?.batteryPercent}%',
           style: text.bodyMedium?.copyWith(
-            color: cameraTrap?.status?.isLowBattery == true
+            color: cameraTrap.status?.isLowBattery == true
                 ? colors.error
                 : colors.primary,
-            fontWeight: cameraTrap?.status?.isLowBattery == true
+            fontWeight: cameraTrap.status?.isLowBattery == true
                 ? FontWeight.bold
                 : FontWeight.normal,
           ),
         ),
         Text(
-          'SD ${cameraTrap?.status?.sdFreeGb.toStringAsFixed(2)} GB free',
+          'SD ${cameraTrap.status?.sdFreeGb.toStringAsFixed(2)} GB free',
           style: text.bodyMedium,
         ),
       ];
@@ -42,10 +42,10 @@ class CameraCard extends StatelessWidget {
 
     List<Widget> cameraInfo = [
       Icon(
-        cameraTrap?.status?.isOnline == true
+        cameraTrap.status?.isOnline == true
             ? Icons.bluetooth
             : Icons.block_rounded,
-        color: cameraTrap?.status?.isOnline == true
+        color: cameraTrap.status?.isOnline == true
             ? colors.primary
             : colors.outline,
       ),
@@ -55,7 +55,7 @@ class CameraCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              cameraTrap?.name ?? 'Unknown',
+              cameraTrap.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: text.titleMedium,

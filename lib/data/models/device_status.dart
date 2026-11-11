@@ -1,20 +1,22 @@
 class DeviceStatus {
-  DeviceStatus({
+  const DeviceStatus({
     required this.batteryPercent,
     required this.sdFreeGb,
     this.isOnline = false,
+    this.lastSeen,
   }) : assert(
          0 <= batteryPercent && batteryPercent <= 100,
          'batteryPercent must be between 0 and 100',
-       );
+       ),
+       assert(sdFreeGb >= 0, 'sdFreeGb must be non-negative');
 
-  int batteryPercent;
-  double sdFreeGb;
-  bool isOnline;
-  DateTime? lastSeen;
+  final int batteryPercent;
+  final double sdFreeGb;
+  final bool isOnline;
+  final DateTime? lastSeen;
 
   static const int lowBatteryPercent = 20;
-  bool get isLowBattery => batteryPercent >= lowBatteryPercent;
+  bool get isLowBattery => batteryPercent <= lowBatteryPercent;
 
   @override
   bool operator ==(Object other) =>

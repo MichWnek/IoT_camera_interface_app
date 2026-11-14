@@ -16,25 +16,28 @@ class DeviceStatus {
   final DateTime? lastSeen;
 
   static const int lowBatteryPercent = 20;
-  bool get isLowBattery => batteryPercent <= lowBatteryPercent;
+  bool get isLowBattery => batteryPercent < lowBatteryPercent;
 
   @override
   bool operator ==(Object other) =>
       other is DeviceStatus &&
       other.batteryPercent == batteryPercent &&
       other.sdFreeGb == sdFreeGb &&
-      other.isOnline == isOnline;
+      other.isOnline == isOnline &&
+      other.lastSeen == lastSeen;
 
   @override
-  int get hashCode => Object.hash(batteryPercent, sdFreeGb, isOnline);
+  int get hashCode => Object.hash(batteryPercent, sdFreeGb, isOnline, lastSeen);
 
   DeviceStatus copyWith({
     int? batteryPercent,
     double? sdFreeGb,
     bool? isOnline,
+    DateTime? lastSeen,
   }) => DeviceStatus(
     batteryPercent: batteryPercent ?? this.batteryPercent,
     sdFreeGb: sdFreeGb ?? this.sdFreeGb,
     isOnline: isOnline ?? this.isOnline,
+    lastSeen: lastSeen ?? this.lastSeen,
   );
 }

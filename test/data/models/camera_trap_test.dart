@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:camera_trap_app/data/models/camera_trap.dart';
+import 'package:camera_trap_app/data/models/device_status.dart';
 
 void main() {
   test('Two CameraTrap objects with same values are equal', () {
@@ -31,7 +32,14 @@ void main() {
       bleMac: '66:77:88:99:AA:BB',
       status: null,
     );
+    final trap = CameraTrap(
+      id: '1',
+      name: 'Camera 1',
+      bleMac: '00:11:22:33:44:56',
+      status: null,
+    );
     expect(trap1, isNot(equals(trap2)));
+    expect(trap1, isNot(equals(trap)));
   });
 
   test('CopyWith creates a new CameraTrap with updated values', () {
@@ -63,7 +71,11 @@ void main() {
       id: '1',
       name: 'Camera 1',
       bleMac: '00:11:22:33:44:55',
-      status: null,
+      status: const DeviceStatus(
+        batteryPercent: 50,
+        sdFreeGb: 1.0,
+        isOnline: true,
+      ),
     );
     final trap2 = trap1.clearStatus();
     expect(trap2.status, isNull);

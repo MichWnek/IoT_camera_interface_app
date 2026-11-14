@@ -47,5 +47,32 @@ void main() {
       () => DeviceStatus(isOnline: true, batteryPercent: 113, sdFreeGb: 2.0),
       throwsA(isA<AssertionError>()),
     );
+
+    expect(
+      () => DeviceStatus(isOnline: true, batteryPercent: -10, sdFreeGb: 2.0),
+      throwsA(isA<AssertionError>()),
+    );
+  });
+
+  test('isLowBattery returns true for batteryPercent < 20', () {
+    final a = const DeviceStatus(
+      isOnline: true,
+      batteryPercent: 19,
+      sdFreeGb: 1.5,
+    );
+    expect(a.isLowBattery, isTrue);
+
+    final b = const DeviceStatus(
+      isOnline: true,
+      batteryPercent: 20,
+      sdFreeGb: 1.5,
+    );
+    expect(b.isLowBattery, isFalse);
+    final c = const DeviceStatus(
+      isOnline: true,
+      batteryPercent: 20,
+      sdFreeGb: 1.5,
+    );
+    expect(c.isLowBattery, isFalse);
   });
 }

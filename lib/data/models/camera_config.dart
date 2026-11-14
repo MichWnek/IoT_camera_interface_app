@@ -8,8 +8,8 @@ class CameraConfig {
          'aiThreshold must be between 0 and 1',
        );
 
-  double aiThreshold;
-  double pirThreshold;
+  final double aiThreshold;
+  final double pirThreshold;
 
   @override
   bool operator ==(Object other) =>

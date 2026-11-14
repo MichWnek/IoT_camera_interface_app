@@ -8,11 +8,11 @@ class CameraTrap {
     this.status,
   });
 
-  String id;
-  String name;
-  String bleMac;
+  final String id;
+  final String name;
+  final String bleMac;
 
-  DeviceStatus? status;
+  final DeviceStatus? status;
 
   @override
   bool operator ==(Object other) =>

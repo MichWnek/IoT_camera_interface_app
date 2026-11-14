@@ -70,7 +70,7 @@ void main() {
     expect(b.isLowBattery, isFalse);
     final c = const DeviceStatus(
       isOnline: true,
-      batteryPercent: 20,
+      batteryPercent: 21,
       sdFreeGb: 1.5,
     );
     expect(c.isLowBattery, isFalse);

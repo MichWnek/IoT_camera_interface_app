@@ -1,3 +1,4 @@
+import 'package:camera_trap_app/features/shared/widgets/status_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:camera_trap_app/data/models/camera_trap.dart';
 
@@ -11,44 +12,7 @@ class CameraCard extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
-    List<Widget> statusBar;
-
-    if (cameraTrap.status == null) {
-      statusBar = [
-        Text(
-          'No status available, connect to device to retrieve status',
-          style: text.bodyMedium,
-        ),
-      ];
-    } else {
-      statusBar = [
-        Text(
-          'Battery ${cameraTrap.status?.batteryPercent}%',
-          style: text.bodyMedium?.copyWith(
-            color: cameraTrap.status?.isLowBattery == true
-                ? colors.error
-                : colors.primary,
-            fontWeight: cameraTrap.status?.isLowBattery == true
-                ? FontWeight.bold
-                : FontWeight.normal,
-          ),
-        ),
-        Text(
-          'SD ${cameraTrap.status?.sdFreeGb.toStringAsFixed(2)} GB free',
-          style: text.bodyMedium,
-        ),
-      ];
-    }
-
     List<Widget> cameraInfo = [
-      Icon(
-        cameraTrap.status?.isOnline == true
-            ? Icons.bluetooth
-            : Icons.block_rounded,
-        color: cameraTrap.status?.isOnline == true
-            ? colors.primary
-            : colors.outline,
-      ),
       const SizedBox(width: 12),
       Expanded(
         child: Column(
@@ -61,7 +25,7 @@ class CameraCard extends StatelessWidget {
               style: text.titleMedium,
             ),
             const SizedBox(height: 4),
-            ...statusBar,
+            StatusSummary(status_: cameraTrap.status).build(context),
           ],
         ),
       ),

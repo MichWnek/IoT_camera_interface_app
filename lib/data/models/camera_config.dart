@@ -1,11 +1,15 @@
 class CameraConfig {
   // subject to change, needs to be decided by hardware team
-  CameraConfig({
+  const CameraConfig({
     required this.aiThreshold,
     required this.pirThreshold, // probably voltage
   }) : assert(
          aiThreshold >= 0 && aiThreshold <= 1,
          'aiThreshold must be between 0 and 1',
+       ),
+       assert(
+         pirThreshold >= 0 && pirThreshold <= 3.3,
+         'pirThreshold (Volts) must be between 0 and 3.3',
        );
 
   final double aiThreshold;

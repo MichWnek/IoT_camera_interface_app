@@ -85,6 +85,11 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         : () {
                             setState(() {
                               _draft = _saved;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Configuration reset'),
+                                ),
+                              );
                             });
                           },
                     child: const Text('Reset'),
@@ -97,6 +102,11 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         : () {
                             setState(() {
                               _saved = _draft;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Configuration applied'),
+                                ),
+                              );
                             });
                           },
                     child: const Text('Apply'),

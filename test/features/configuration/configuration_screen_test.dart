@@ -99,7 +99,8 @@ void main() {
   });
 
   testWidgets('Explanation text appears when no status is passed', (
-   WidgetTester tester) async {
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: ConfigurationScreen(
@@ -107,7 +108,10 @@ void main() {
         ),
       ),
     );
-    expect(find.text('No status available, connect to device to retrieve status'), findsOneWidget);
+    expect(
+      find.text('No status available, connect to device to retrieve status'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Reset returns to last applied change', (

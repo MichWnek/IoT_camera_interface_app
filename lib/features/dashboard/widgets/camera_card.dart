@@ -13,7 +13,6 @@ class CameraCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     List<Widget> cameraInfo = [
-      const SizedBox(width: 12),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

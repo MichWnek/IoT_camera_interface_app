@@ -98,7 +98,19 @@ void main() {
     expect(tester.widget<ElevatedButton>(resetButton).enabled, isFalse);
   });
 
-  testWidgets('Apply button sets _saved to _draft', (
+  testWidgets('Explanation text appears when no status is passed', (
+   WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ConfigurationScreen(
+          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+        ),
+      ),
+    );
+    expect(find.text('No status available, connect to device to retrieve status'), findsOneWidget);
+  });
+
+  testWidgets('Reset returns to last applied change', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(

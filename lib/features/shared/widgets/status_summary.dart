@@ -35,8 +35,8 @@ class StatusSummary extends StatelessWidget {
         Text(
           'Battery: ${status.batteryPercent}%',
           style: text.bodyMedium?.copyWith(
-            color: status.isLowBattery == true ? colors.error : colors.primary,
-            fontWeight: status.isLowBattery == true
+            color: status.isLowBattery ? colors.error : colors.primary,
+            fontWeight: status.isLowBattery
                 ? FontWeight.bold
                 : FontWeight.normal,
           ),

@@ -19,14 +19,12 @@ class ConfigurationScreen extends StatefulWidget {
 class _ConfigurationScreenState extends State<ConfigurationScreen> {
   late CameraConfig _saved;
   late CameraConfig _draft;
-  late DeviceStatus? _status;
 
   @override
   void initState() {
     super.initState();
     _saved = widget.initialConfig;
     _draft = widget.initialConfig;
-    _status = widget.status;
   }
 
   @override
@@ -35,13 +33,14 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text('Configuration', style: text.titleLarge)),
-      body: Card(
-        child: Padding(
+      body: ListView(
+        children: [
+          Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              StatusSummary(status: _status),
+              StatusSummary(status: widget.status),
               const SizedBox(height: 8),
               const SizedBox(height: 8),
               Text(
@@ -114,12 +113,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                   const SizedBox(width: 8),
                   ElevatedButton(
                     key: const Key('test_button'),
-                    onPressed: _saved == _draft
-                        ? null
-                        : () {
-                            setState(() {
-                              _saved = _draft;
-                            });
+                    onPressed: () {
+                            //Add BLE "Hello World" command
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('BLE link test initiated'),
@@ -133,7 +128,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
             ],
           ),
         ),
-      ),
+      ]),
     );
   }
 }

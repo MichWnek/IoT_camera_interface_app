@@ -25,7 +25,7 @@ class CameraCard extends StatelessWidget {
               style: text.titleMedium,
             ),
             const SizedBox(height: 4),
-            StatusSummary(status_: cameraTrap.status).build(context),
+            StatusSummary(status: cameraTrap.status),
           ],
         ),
       ),

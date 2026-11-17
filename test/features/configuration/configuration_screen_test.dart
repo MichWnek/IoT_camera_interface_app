@@ -1,5 +1,6 @@
 import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
 import 'package:camera_trap_app/data/models/camera_config.dart';
+import 'package:camera_trap_app/data/models/device_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,11 @@ void main() {
       const MaterialApp(
         home: ConfigurationScreen(
           initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+          status: DeviceStatus(
+            batteryPercent: 80,
+            sdFreeGb: 1.5,
+            isOnline: true,
+          ),
         ),
       ),
     );
@@ -90,5 +96,40 @@ void main() {
     expect(find.text('PIR Threshold: 1.65 V'), findsOneWidget);
     expect(tester.widget<ElevatedButton>(applyButton).enabled, isFalse);
     expect(tester.widget<ElevatedButton>(resetButton).enabled, isFalse);
+  });
+
+  testWidgets('Apply button sets _saved to _draft', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ConfigurationScreen(
+          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+        ),
+      ),
+    );
+
+    final applyButton = find.byKey(const Key('apply_button'));
+    final aiSlider = find.byKey(const Key('ai_threshold_slider'));
+    final pirSlider = find.byKey(const Key('pir_threshold_slider'));
+    tester.widget<Slider>(aiSlider).onChanged!(0.35);
+    tester.widget<Slider>(pirSlider).onChanged!(2.0);
+    await tester.pump();
+
+    expect(tester.widget<ElevatedButton>(applyButton).enabled, isTrue);
+    await tester.tap(applyButton);
+    await tester.pumpAndSettle();
+
+    final resetButton = find.byKey(const Key('reset_button'));
+    await tester.drag(aiSlider, const Offset(10, 0));
+    await tester.drag(pirSlider, const Offset(20, 0));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<ElevatedButton>(applyButton).enabled, isTrue);
+    await tester.tap(resetButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('AI Threshold: 35%'), findsOneWidget);
+    expect(find.text('PIR Threshold: 2.00 V'), findsOneWidget);
   });
 }

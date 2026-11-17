@@ -4,8 +4,12 @@ import 'package:camera_trap_app/features/shared/widgets/status_summary.dart';
 import 'package:camera_trap_app/data/models/device_status.dart';
 
 class ConfigurationScreen extends StatefulWidget {
-  const ConfigurationScreen({super.key, required this.initialConfig});
-
+  const ConfigurationScreen({
+    super.key,
+    required this.initialConfig,
+    this.status,
+  });
+  final DeviceStatus? status;
   final CameraConfig initialConfig;
 
   @override
@@ -15,12 +19,14 @@ class ConfigurationScreen extends StatefulWidget {
 class _ConfigurationScreenState extends State<ConfigurationScreen> {
   late CameraConfig _saved;
   late CameraConfig _draft;
+  late DeviceStatus? _status;
 
   @override
   void initState() {
     super.initState();
     _saved = widget.initialConfig;
     _draft = widget.initialConfig;
+    _status = widget.status;
   }
 
   @override
@@ -35,13 +41,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const StatusSummary(
-                status_: DeviceStatus(
-                  batteryPercent: 67,
-                  sdFreeGb: 0.67,
-                  isOnline: true,
-                ),
-              ).build(context),
+              StatusSummary(status: _status),
               const SizedBox(height: 8),
               const SizedBox(height: 8),
               Text(
@@ -85,16 +85,16 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         : () {
                             setState(() {
                               _draft = _saved;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Configuration reset'),
-                                ),
-                              );
                             });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Configuration reset'),
+                              ),
+                            );
                           },
                     child: const Text('Reset'),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 8),
                   ElevatedButton(
                     key: const Key('apply_button'),
                     onPressed: _saved == _draft
@@ -102,14 +102,31 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         : () {
                             setState(() {
                               _saved = _draft;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Configuration applied'),
-                                ),
-                              );
                             });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Configuration applied'),
+                              ),
+                            );
                           },
                     child: const Text('Apply'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    key: const Key('test_button'),
+                    onPressed: _saved == _draft
+                        ? null
+                        : () {
+                            setState(() {
+                              _saved = _draft;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('BLE link test initiated'),
+                              ),
+                            );
+                          },
+                    child: const Text('Test'),
                   ),
                 ],
               ),

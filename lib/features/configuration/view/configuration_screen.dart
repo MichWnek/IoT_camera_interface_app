@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:camera_trap_app/data/models/camera_config.dart';
 import 'package:camera_trap_app/features/shared/widgets/status_summary.dart';
 import 'package:camera_trap_app/data/models/device_status.dart';
+import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 
 class ConfigurationScreen extends StatefulWidget {
   const ConfigurationScreen({
     super.key,
     required this.initialConfig,
+    required this.cameraService,
     this.status,
   });
+
   final DeviceStatus? status;
   final CameraConfig initialConfig;
+  final FakeCameraService cameraService;
 
   @override
   State<ConfigurationScreen> createState() => _ConfigurationScreenState();
@@ -19,6 +23,22 @@ class ConfigurationScreen extends StatefulWidget {
 class _ConfigurationScreenState extends State<ConfigurationScreen> {
   late CameraConfig _saved;
   late CameraConfig _draft;
+  bool _busy = false;
+
+  Future<void> _ping() async {
+    setState(() => _busy = true);
+    Duration? rtt;
+    try {
+      rtt = await widget.cameraService.ping();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      rtt.inMilliseconds > 0 ? SnackBar( content: Text('Echo in ${rtt.toString}')) :
+                               const SnackBar( content: Text('No response from camera')),
+    );
+  }
 
   @override
   void initState() {
@@ -116,11 +136,7 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                           key: const Key('test_button'),
                           onPressed: () {
                             // TODO: send BLE "hello" test command
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('BLE link test initiated'),
-                              ),
-                            );
+                            _busy ? () : () => _ping();
                           },
                           child: const Text('Test'),
                         ),

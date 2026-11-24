@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:camera_trap_app/data/models/camera_config.dart';
 import 'package:camera_trap_app/features/shared/widgets/status_summary.dart';
@@ -27,17 +29,20 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
 
   Future<void> _ping() async {
     setState(() => _busy = true);
-    Duration? rtt;
+    String message;
     try {
-      rtt = await widget.cameraService.ping();
+      final rtt = await widget.cameraService.ping().timeout(
+        const Duration(seconds: 1),
+      );
+      message = 'Echo in ${rtt.inMilliseconds} ms';
+    } on TimeoutException {
+      message = 'No response from camera';
     } finally {
       if (mounted) setState(() => _busy = false);
     }
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      rtt.inMilliseconds > 0 ? SnackBar( content: Text('Echo in ${rtt.toString}')) :
-                               const SnackBar( content: Text('No response from camera')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -134,10 +139,8 @@ class _ConfigurationScreenState extends State<ConfigurationScreen> {
                         const SizedBox(width: 8),
                         OutlinedButton(
                           key: const Key('test_button'),
-                          onPressed: () {
-                            // TODO: send BLE "hello" test command
-                            _busy ? () : () => _ping();
-                          },
+                          // TODO: send BLE "hello" test command
+                          onPressed: _busy ? null : _ping,
                           child: const Text('Test'),
                         ),
                       ],

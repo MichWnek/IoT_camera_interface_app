@@ -1,13 +1,10 @@
+import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 import 'package:camera_trap_app/features/dashboard/view/dashboard_screen.dart';
 import 'package:camera_trap_app/core/theme/app_theme.dart';
-import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 import 'package:flutter/material.dart';
 
 class CameraTrapApp extends StatelessWidget {
-  const CameraTrapApp({
-    super.key,
-    required this.cameraService,
-  });
+  const CameraTrapApp({super.key, required this.cameraService});
   final FakeCameraService cameraService;
 
   @override
@@ -18,7 +15,7 @@ class CameraTrapApp extends StatelessWidget {
       theme: AppTheme.day,
       darkTheme: AppTheme.night,
       themeMode: ThemeMode.system,
-      home: DashboardScreen(cameraService: cameraService,),
+      home: DashboardScreen(cameraService: cameraService),
     );
   }
 }

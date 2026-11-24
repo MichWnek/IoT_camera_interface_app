@@ -1,21 +1,44 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:camera_trap_app/app.dart';
 import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 
 void main() {
-  testWidgets('App screen text display test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const CameraTrapApp());
+  testWidgets('Dashboard shows a spinner, then the loaded cameras', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      CameraTrapApp(cameraService: FakeCameraService(delay: Duration.zero)),
+    );
 
-    // Verify text is displayed
     expect(find.text('Camera Traps'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(find.byType(CameraCard), findsNWidgets(3));
+  });
+
+  testWidgets('Dashboard shows an error and Retry when loading fails', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      CameraTrapApp(
+        cameraService: FakeCameraService(fail: true, delay: Duration.zero),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CameraCard), findsNothing);
+    expect(find.text('Retry'), findsOneWidget);
+
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+
+    // Retry starts a new load, so the spinner comes back.
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pumpAndSettle();
   });
 }

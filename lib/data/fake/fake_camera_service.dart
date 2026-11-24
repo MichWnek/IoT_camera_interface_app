@@ -4,6 +4,7 @@ import 'package:camera_trap_app/data/models/device_status.dart';
 class FakeCameraService {
   FakeCameraService({
     this.delay = const Duration(milliseconds: 1000),
+    this.pingDelay = const Duration(milliseconds: 200),
     this.fail = false,
     this.cameraStatus = const DeviceStatus(
       batteryPercent: 90,
@@ -13,6 +14,7 @@ class FakeCameraService {
   });
 
   final Duration delay;
+  final Duration pingDelay;
   final bool fail;
   DeviceStatus cameraStatus;
 
@@ -52,22 +54,20 @@ class FakeCameraService {
     ];
   }
 
-  Stream<DeviceStatus> watchStatus(String cameraId) async*{
-    while (cameraStatus.batteryPercent >= 0) {
-      int old = cameraStatus.batteryPercent;
+  Stream<DeviceStatus> watchStatus(String cameraId) async* {
+    while (cameraStatus.batteryPercent > 0) {
+      await Future.delayed(delay);
       cameraStatus = cameraStatus.copyWith(
-        batteryPercent: old--,
+        batteryPercent: cameraStatus.batteryPercent - 1,
         lastSeen: DateTime.now(),
       );
-
-      await Future.delayed(delay);
       yield cameraStatus;
     }
   }
 
-  Future<Duration> ping() async{
-    final Duration rtt = const Duration(milliseconds: 1500);
-    await Future.delayed(rtt);
-    return rtt;
+  Future<Duration> ping() async {
+    final stopwatch = Stopwatch()..start();
+    await Future.delayed(pingDelay);
+    return stopwatch.elapsed;
   }
 }

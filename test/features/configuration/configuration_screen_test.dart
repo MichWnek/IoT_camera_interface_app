@@ -1,6 +1,7 @@
 import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
 import 'package:camera_trap_app/data/models/camera_config.dart';
 import 'package:camera_trap_app/data/models/device_status.dart';
+import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 
@@ -9,10 +10,14 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ConfigurationScreen(
-          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
-          status: DeviceStatus(
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(delay: Duration.zero),
+          status: const DeviceStatus(
             batteryPercent: 80,
             sdFreeGb: 1.5,
             isOnline: true,
@@ -29,9 +34,13 @@ void main() {
 
   testWidgets('Apply & Reset start out disabled', (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ConfigurationScreen(
-          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(delay: Duration.zero),
         ),
       ),
     );
@@ -48,9 +57,13 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ConfigurationScreen(
-          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(delay: Duration.zero),
         ),
       ),
     );
@@ -72,9 +85,13 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ConfigurationScreen(
-          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(delay: Duration.zero),
         ),
       ),
     );
@@ -102,9 +119,13 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ConfigurationScreen(
-          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(delay: Duration.zero),
         ),
       ),
     );
@@ -118,9 +139,13 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ConfigurationScreen(
-          initialConfig: CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65),
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(delay: Duration.zero),
         ),
       ),
     );
@@ -147,5 +172,62 @@ void main() {
 
     expect(find.text('AI Threshold: 35%'), findsOneWidget);
     expect(find.text('PIR Threshold: 2.00 V'), findsOneWidget);
+  });
+
+  testWidgets('Test button shows the echo time and is disabled meanwhile', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ConfigurationScreen(
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(
+            pingDelay: const Duration(milliseconds: 200),
+          ),
+        ),
+      ),
+    );
+
+    final testButton = find.byKey(const Key('test_button'));
+    await tester.tap(testButton);
+    await tester.pump();
+
+    expect(tester.widget<OutlinedButton>(testButton).enabled, isFalse);
+
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump();
+
+    expect(find.textContaining('Echo in'), findsOneWidget);
+    expect(tester.widget<OutlinedButton>(testButton).enabled, isTrue);
+  });
+
+  testWidgets('Test button reports no response when the ping times out', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ConfigurationScreen(
+          initialConfig: const CameraConfig(
+            aiThreshold: 0.5,
+            pirThreshold: 1.65,
+          ),
+          cameraService: FakeCameraService(
+            pingDelay: const Duration(seconds: 2),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const Key('test_button')));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+
+    expect(find.text('No response from camera'), findsOneWidget);
+
+    // Let the abandoned 2 s ping finish so no timer is left pending.
+    await tester.pump(const Duration(seconds: 1));
   });
 }

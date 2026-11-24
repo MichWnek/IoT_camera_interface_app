@@ -3,7 +3,5 @@ import 'package:camera_trap_app/app.dart';
 import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 
 void main() {
-  runApp(CameraTrapApp(
-    cameraService: FakeCameraService(),
-  ));
+  runApp(CameraTrapApp(cameraService: FakeCameraService()));
 }

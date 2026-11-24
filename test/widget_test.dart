@@ -1,17 +1,21 @@
 import 'package:camera_trap_app/app.dart';
+import 'package:camera_trap_app/data/settings_repository.dart';
 import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
 import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 
+CameraTrapApp testApp({bool fail = false}) => CameraTrapApp(
+  cameraService: FakeCameraService(delay: Duration.zero, fail: fail),
+  settingsRepository: InMemorySettingsRepository(),
+);
+
 void main() {
   testWidgets('Dashboard shows a spinner, then the loaded cameras', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      CameraTrapApp(cameraService: FakeCameraService(delay: Duration.zero)),
-    );
+    await tester.pumpWidget(testApp());
 
     expect(find.text('Camera Traps'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -25,11 +29,7 @@ void main() {
   testWidgets('Dashboard shows an error and Retry when loading fails', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      CameraTrapApp(
-        cameraService: FakeCameraService(fail: true, delay: Duration.zero),
-      ),
-    );
+    await tester.pumpWidget(testApp(fail: true));
     await tester.pumpAndSettle();
 
     expect(find.byType(CameraCard), findsNothing);
@@ -44,9 +44,7 @@ void main() {
   });
 
   testWidgets('Dashboard battery updates live', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      CameraTrapApp(cameraService: FakeCameraService(delay: Duration.zero)),
-    );
+    await tester.pumpWidget(testApp());
     await tester.pumpAndSettle();
     expect(find.text('Battery: 67%'), findsOneWidget);
 
@@ -58,9 +56,7 @@ void main() {
   testWidgets('Tapping a camera opens its live configuration, back returns', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      CameraTrapApp(cameraService: FakeCameraService(delay: Duration.zero)),
-    );
+    await tester.pumpWidget(testApp());
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Camera 1'));

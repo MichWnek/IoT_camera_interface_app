@@ -2,6 +2,7 @@ import 'package:camera_trap_app/data/models/camera_config.dart';
 import 'package:camera_trap_app/data/models/camera_trap.dart';
 import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
 import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
+import 'package:camera_trap_app/features/settings/view/settings_screen.dart';
 import 'package:camera_trap_app/state/cameras_cubit.dart';
 import 'package:camera_trap_app/state/cameras_state.dart';
 import 'package:flutter/material.dart';
@@ -21,12 +22,26 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  void _openSettings(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Camera Traps', style: text.titleLarge)),
+      appBar: AppBar(
+        title: Text('Camera Traps', style: text.titleLarge),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Settings',
+            onPressed: () => _openSettings(context),
+          ),
+        ],
+      ),
       body: BlocBuilder<CamerasCubit, CamerasState>(
         builder: (context, state) => switch (state) {
           CamerasLoading() => const Center(child: CircularProgressIndicator()),

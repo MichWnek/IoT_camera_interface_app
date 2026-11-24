@@ -1,30 +1,24 @@
-import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
-import 'package:flutter/material.dart';
-import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
+import 'package:camera_trap_app/data/models/camera_config.dart';
 import 'package:camera_trap_app/data/models/camera_trap.dart';
+import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
+import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
+import 'package:camera_trap_app/state/cameras_cubit.dart';
+import 'package:camera_trap_app/state/cameras_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key, required this.cameraService});
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
-  final FakeCameraService cameraService;
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  late Future<List<CameraTrap>> _cameraFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _cameraFuture = widget.cameraService.loadCameras();
-  }
-
-  void _retry() {
-    setState(() {
-      _cameraFuture = widget.cameraService.loadCameras();
-    });
+  void _openConfiguration(BuildContext context, CameraTrap camera) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ConfigurationScreen(
+          cameraId: camera.id,
+          initialConfig: CameraConfig.defaults,
+        ),
+      ),
+    );
   }
 
   @override
@@ -33,32 +27,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text('Camera Traps', style: text.titleLarge)),
-      body: FutureBuilder<List<CameraTrap>>(
-        future: _cameraFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Failed: ${snapshot.error}'),
-                  ElevatedButton(
-                    onPressed: () => _retry(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-          final cameras = snapshot.requireData;
-          return ListView.builder(
+      body: BlocBuilder<CamerasCubit, CamerasState>(
+        builder: (context, state) => switch (state) {
+          CamerasLoading() => const Center(child: CircularProgressIndicator()),
+          CamerasError(:final message) => Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(message),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => context.read<CamerasCubit>().load(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+          CamerasLoaded(:final cameras) when cameras.isEmpty => const Center(
+            child: Text('No cameras yet, tap + to add one'),
+          ),
+          CamerasLoaded(:final cameras) => ListView.builder(
             itemCount: cameras.length,
-            itemBuilder: (context, index) =>
-                CameraCard(cameraTrap: cameras[index]),
-          );
+            itemBuilder: (context, index) => CameraCard(
+              cameraTrap: cameras[index],
+              onTap: () => _openConfiguration(context, cameras[index]),
+            ),
+          ),
         },
       ),
       floatingActionButton: FloatingActionButton(

@@ -12,6 +12,9 @@ class CameraConfig {
          'pirThreshold (Volts) must be between 0 and 3.3',
        );
 
+  /// Used until configs can be read back from the camera.
+  static const defaults = CameraConfig(aiThreshold: 0.5, pirThreshold: 1.65);
+
   final double aiThreshold;
   final double pirThreshold;
 

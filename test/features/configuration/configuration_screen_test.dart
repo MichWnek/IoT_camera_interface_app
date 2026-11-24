@@ -1,53 +1,85 @@
-import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
-import 'package:camera_trap_app/data/models/camera_config.dart';
-import 'package:camera_trap_app/data/models/device_status.dart';
+import 'package:camera_trap_app/data/camera_service.dart';
 import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:camera_trap_app/data/models/camera_config.dart';
+import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
+import 'package:camera_trap_app/state/cameras_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-void main() {
-  testWidgets('ConfigurationScreen renders correctly', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(delay: Duration.zero),
-          status: const DeviceStatus(
-            batteryPercent: 80,
-            sdFreeGb: 1.5,
-            isOnline: true,
+/// Shows the configuration screen with the providers the app normally gives
+/// it, and waits for the cameras to load.
+Future<void> pumpConfigurationScreen(
+  WidgetTester tester, {
+  FakeCameraService? service,
+  String cameraId = '1',
+}) async {
+  final cameraService = service ?? FakeCameraService(delay: Duration.zero);
+  await tester.pumpWidget(
+    RepositoryProvider<CameraService>.value(
+      value: cameraService,
+      child: BlocProvider(
+        create: (_) => CamerasCubit(cameraService)..load(),
+        child: MaterialApp(
+          home: ConfigurationScreen(
+            cameraId: cameraId,
+            initialConfig: const CameraConfig(
+              aiThreshold: 0.5,
+              pirThreshold: 1.65,
+            ),
           ),
         ),
       ),
-    );
+    ),
+  );
+  // The cubit is created lazily during the first build, so loading only
+  // starts then; settle until the loaded cameras are on screen.
+  await tester.pumpAndSettle();
+}
 
-    // Verify that the ConfigurationScreen is rendered with the correct initial values
+void main() {
+  final applyButton = find.byKey(const Key('apply_button'));
+  final resetButton = find.byKey(const Key('reset_button'));
+  final testButton = find.byKey(const Key('test_button'));
+  final aiSlider = find.byKey(const Key('ai_threshold_slider'));
+  final pirSlider = find.byKey(const Key('pir_threshold_slider'));
+
+  testWidgets('ConfigurationScreen renders correctly', (
+    WidgetTester tester,
+  ) async {
+    await pumpConfigurationScreen(tester);
+
     expect(find.text('Configuration'), findsOneWidget);
+    expect(find.text('Camera 1'), findsOneWidget);
+    expect(find.text('Battery: 67%'), findsOneWidget);
     expect(find.text('AI Threshold: 50%'), findsOneWidget);
     expect(find.text('PIR Threshold: 1.65 V'), findsOneWidget);
   });
 
-  testWidgets('Apply & Reset start out disabled', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(delay: Duration.zero),
-        ),
-      ),
-    );
+  testWidgets('Status updates live while the screen is open', (
+    WidgetTester tester,
+  ) async {
+    await pumpConfigurationScreen(tester);
+    expect(find.text('Battery: 67%'), findsOneWidget);
 
-    // Verify that the Apply and Reset buttons are disabled initially
-    final applyButton = find.byKey(const Key('apply_button'));
-    final resetButton = find.byKey(const Key('reset_button'));
+    await tester.pump(const Duration(seconds: 2));
+
+    expect(find.text('Battery: 66%'), findsOneWidget);
+  });
+
+  testWidgets('Explanation text appears for a camera that never connected', (
+    WidgetTester tester,
+  ) async {
+    await pumpConfigurationScreen(tester, cameraId: '3');
+
+    expect(
+      find.text('No status available, connect to device to retrieve status'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Apply & Reset start out disabled', (WidgetTester tester) async {
+    await pumpConfigurationScreen(tester);
 
     expect(tester.widget<ElevatedButton>(applyButton).enabled, isFalse);
     expect(tester.widget<ElevatedButton>(resetButton).enabled, isFalse);
@@ -56,26 +88,10 @@ void main() {
   testWidgets('Apply & Reset become enabled after changing a slider', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(delay: Duration.zero),
-        ),
-      ),
-    );
+    await pumpConfigurationScreen(tester);
 
-    // Change the AI Threshold slider
-    final aiSlider = find.byKey(const Key('ai_threshold_slider'));
-    await tester.drag(aiSlider, const Offset(50, 0)); // Drag to the right
+    await tester.drag(aiSlider, const Offset(50, 0));
     await tester.pumpAndSettle();
-
-    // Verify that the Apply and Reset buttons are now enabled
-    final applyButton = find.byKey(const Key('apply_button'));
-    final resetButton = find.byKey(const Key('reset_button'));
 
     expect(tester.widget<ElevatedButton>(applyButton).enabled, isTrue);
     expect(tester.widget<ElevatedButton>(resetButton).enabled, isTrue);
@@ -84,75 +100,24 @@ void main() {
   testWidgets('Reset button resets sliders to initial values', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(delay: Duration.zero),
-        ),
-      ),
-    );
+    await pumpConfigurationScreen(tester);
 
-    // Change the AI Threshold slider
-    final aiSlider = find.byKey(const Key('ai_threshold_slider'));
-    await tester.drag(aiSlider, const Offset(50, 0)); // Drag to the right
+    await tester.drag(aiSlider, const Offset(50, 0));
     await tester.pumpAndSettle();
-
-    // Tap the Reset button
-    final resetButton = find.byKey(const Key('reset_button'));
     await tester.tap(resetButton);
     await tester.pumpAndSettle();
 
-    final applyButton = find.byKey(const Key('apply_button'));
-
-    // Verify that the sliders are reset to their initial values
     expect(find.text('AI Threshold: 50%'), findsOneWidget);
     expect(find.text('PIR Threshold: 1.65 V'), findsOneWidget);
     expect(tester.widget<ElevatedButton>(applyButton).enabled, isFalse);
     expect(tester.widget<ElevatedButton>(resetButton).enabled, isFalse);
   });
 
-  testWidgets('Explanation text appears when no status is passed', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(delay: Duration.zero),
-        ),
-      ),
-    );
-    expect(
-      find.text('No status available, connect to device to retrieve status'),
-      findsOneWidget,
-    );
-  });
-
   testWidgets('Reset returns to last applied change', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(delay: Duration.zero),
-        ),
-      ),
-    );
+    await pumpConfigurationScreen(tester);
 
-    final applyButton = find.byKey(const Key('apply_button'));
-    final aiSlider = find.byKey(const Key('ai_threshold_slider'));
-    final pirSlider = find.byKey(const Key('pir_threshold_slider'));
     tester.widget<Slider>(aiSlider).onChanged!(0.35);
     tester.widget<Slider>(pirSlider).onChanged!(2.0);
     await tester.pump();
@@ -161,7 +126,6 @@ void main() {
     await tester.tap(applyButton);
     await tester.pumpAndSettle();
 
-    final resetButton = find.byKey(const Key('reset_button'));
     await tester.drag(aiSlider, const Offset(10, 0));
     await tester.drag(pirSlider, const Offset(20, 0));
     await tester.pumpAndSettle();
@@ -174,24 +138,50 @@ void main() {
     expect(find.text('PIR Threshold: 2.00 V'), findsOneWidget);
   });
 
+  testWidgets('Apply sends the config and confirms it', (
+    WidgetTester tester,
+  ) async {
+    await pumpConfigurationScreen(tester);
+
+    tester.widget<Slider>(aiSlider).onChanged!(0.35);
+    await tester.pump();
+    await tester.tap(applyButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Configuration applied'), findsOneWidget);
+    expect(tester.widget<ElevatedButton>(applyButton).enabled, isFalse);
+    expect(tester.widget<ElevatedButton>(resetButton).enabled, isFalse);
+  });
+
+  testWidgets('A failed apply keeps the changes so the user can retry', (
+    WidgetTester tester,
+  ) async {
+    await pumpConfigurationScreen(
+      tester,
+      service: FakeCameraService(delay: Duration.zero, failApply: true),
+    );
+
+    tester.widget<Slider>(aiSlider).onChanged!(0.35);
+    await tester.pump();
+    await tester.tap(applyButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Could not apply configuration'), findsOneWidget);
+    expect(find.text('AI Threshold: 35%'), findsOneWidget);
+    expect(tester.widget<ElevatedButton>(applyButton).enabled, isTrue);
+  });
+
   testWidgets('Test button shows the echo time and is disabled meanwhile', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(
-            pingDelay: const Duration(milliseconds: 200),
-          ),
-        ),
+    await pumpConfigurationScreen(
+      tester,
+      service: FakeCameraService(
+        delay: Duration.zero,
+        pingDelay: const Duration(milliseconds: 200),
       ),
     );
 
-    final testButton = find.byKey(const Key('test_button'));
     await tester.tap(testButton);
     await tester.pump();
 
@@ -207,21 +197,15 @@ void main() {
   testWidgets('Test button reports no response when the ping times out', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ConfigurationScreen(
-          initialConfig: const CameraConfig(
-            aiThreshold: 0.5,
-            pirThreshold: 1.65,
-          ),
-          cameraService: FakeCameraService(
-            pingDelay: const Duration(seconds: 2),
-          ),
-        ),
+    await pumpConfigurationScreen(
+      tester,
+      service: FakeCameraService(
+        delay: Duration.zero,
+        pingDelay: const Duration(seconds: 2),
       ),
     );
 
-    await tester.tap(find.byKey(const Key('test_button')));
+    await tester.tap(testButton);
     await tester.pump(const Duration(seconds: 1));
     await tester.pump();
 

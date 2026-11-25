@@ -6,9 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:camera_trap_app/data/fake/fake_camera_service.dart';
 
+import 'fakes/fake_ble_adapter.dart';
+
 CameraTrapApp testApp({bool fail = false}) => CameraTrapApp(
   cameraService: FakeCameraService(delay: Duration.zero, fail: fail),
   settingsRepository: InMemorySettingsRepository(),
+  bleAdapter: FakeBleAdapter(),
 );
 
 void main() {

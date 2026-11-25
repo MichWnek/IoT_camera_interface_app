@@ -2,6 +2,7 @@ import 'package:camera_trap_app/data/models/camera_config.dart';
 import 'package:camera_trap_app/data/models/camera_trap.dart';
 import 'package:camera_trap_app/features/configuration/view/configuration_screen.dart';
 import 'package:camera_trap_app/features/dashboard/widgets/camera_card.dart';
+import 'package:camera_trap_app/features/nearby/view/nearby_devices_screen.dart';
 import 'package:camera_trap_app/features/settings/view/settings_screen.dart';
 import 'package:camera_trap_app/state/cameras_cubit.dart';
 import 'package:camera_trap_app/state/cameras_state.dart';
@@ -35,6 +36,15 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Camera Traps', style: text.titleLarge),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bluetooth_searching),
+            tooltip: 'Nearby devices',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const NearbyDevicesScreen(),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: 'Settings',

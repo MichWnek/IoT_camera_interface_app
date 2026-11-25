@@ -7,6 +7,8 @@ import 'package:camera_trap_app/features/settings/view/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../fakes/fake_ble_adapter.dart';
+
 Future<void> pumpApp(
   WidgetTester tester, {
   ThemePreference saved = ThemePreference.system,
@@ -15,6 +17,7 @@ Future<void> pumpApp(
     CameraTrapApp(
       cameraService: FakeCameraService(delay: Duration.zero),
       settingsRepository: InMemorySettingsRepository(saved),
+      bleAdapter: FakeBleAdapter(),
     ),
   );
   await tester.pumpAndSettle();

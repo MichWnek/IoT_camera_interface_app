@@ -1,4 +1,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Bluetooth LE, Android 12 and newer. "neverForLocation" means the app
+         doesn't need the location permission to scan. If the RSSI-based
+         locating feature (micro-navigation) ever relies on generic beacons,
+         revisit this: Android filters some beacons out of results with it. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Bluetooth LE, Android 11 and older: scanning needs location. -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30" />
+
+    <!-- The app still installs on phones without BLE; it says so on screen. -->
+    <uses-feature android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+
     <application
         android:label="camera_trap_app"
         android:name="${applicationName}"

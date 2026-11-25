@@ -56,7 +56,7 @@ class CameraRecord {
   CameraRecord({
     required this.id,
     required this.name,
-    required this.bleMac,
+    required String bleMac,
     this.status,
     this.lastConfig,
     this.configUpdatedAt,
@@ -66,7 +66,8 @@ class CameraRecord {
     Map<String, Object?>? extra,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : extra = Map.unmodifiable(extra ?? const {}),
+  }) : bleMac = normalizeBleMac(bleMac),
+       extra = Map.unmodifiable(extra ?? const {}),
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
@@ -96,8 +97,15 @@ class CameraRecord {
     updatedAt: updatedAt,
   );
 
+  /// The single stored form of a BLE address: trimmed and upper case, so
+  /// `aa:bb:…` and `AA:BB:…` are the same camera. (On iOS this is a per-phone
+  /// UUID rather than a real MAC; UUIDs are case-insensitive too.)
+  static String normalizeBleMac(String bleMac) => bleMac.trim().toUpperCase();
+
   final String id;
   final String name;
+
+  /// Always normalised, see [normalizeBleMac].
   final String bleMac;
 
   /// Last known battery, SD card space, online flag, and timestamp.
